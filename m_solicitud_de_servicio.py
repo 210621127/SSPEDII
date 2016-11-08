@@ -18,33 +18,96 @@ fecha de recepcion:
 fecha compromiso de entrega:
 """
 import os
+from datetime import datetime, date, time, timedelta
 import time
 #import sys  #para los formatos
 class SolicitudServicio():
     def __init__(self,data):
         self.id_solicitud = data
         self.id_cliente = data
-        self.completado = data
         self.placa = data
-        self.t_servicio = data
-        self.t_descripcion = data
+        self.tipo_servicio = data
+        self.descripcion = data
         self.detalles = data
+        self.hora = data
         self.f_llegada = data
-        self.f_compromiso = data
+        self.f_entrega = data
+        self.completado = data
 
     def __str__(self):
-        cad = "\n\t ID solicitud: "+str(self.id_solicitud) +\
-              "\n\t ID cliente: "+ str()
+        return '{0:23}{1:}'.format("\n\tID solicitud:", str(self.id_solicitud))+\
+            '{0:23}{1:}'.format("\n\tID cliente: ", str(self.id_cliente))+\
+            '{0:23}{1:}'.format("\n\tPlaca:",str(self.placa))+\
+            '{0:23}{1:}'.format("\n\tTipo de servicio:",str(self.descripcion))+\
+            '{0:23}{1:}'.format("\n\tDetalles:",str(self.detalles))+\
+            '{0:23}{1:}'.format("\n\tHora: ", str(self.hora))+\
+            '{0:23}{1:}'.format("\n\tFecha de llegada:",str(self.f_llegada))+\
+            '{0:23}{1:}'.format("\n\tFecha compromiso: ",str(self.f_entrega))+\
+            '{0:23}{1:}'.format("\n\tCompletado: ",str(self.completado))
 
-        return cad
+class AdminSolicitudServicio():
+
+
+    def __init__(self):
+        self.lista = []
+        self.s = SolicitudServicio(None)
+        self.t_Servicio = ["Venta","Reparacion","Mantenimiento","Revision"]
+
+    def agregar(self):
+        with open("solicitud_servicio.txt",'r') as f:
+            self.s.id_solicitud = int(f.readline())
+
+        self.s.id_cliente = input("\n\tID cliente: ")
+        self.s.placa = input("\n\tPlaca: ")
+        i = 1
+        print("\n\tTipo de servicio: ")
+        for servicio in self.t_Servicio:
+            print ("\t",i,") ",servicio)
+            i += 1
+        op = input("\n\tSeleccione una opcion: ")
+        while True:
+            if op == '1' or op == '2' or op == '3' or op == '4':
+                break
+            else:
+                op = input("\t(!) Seleccione una de las opciones anteriores: ")
+        self.s.tipo_servicio = self.t_Servicio[int(op)]
+        self.s.descripcion = input("\n\tDescripcion del servicio:")
+        self.s.detalles = input ("\n\tDetalles del auto: ")
+
+        formato = "%d/%m/%Y"
+        ahora = datetime.today()
+        self.s.hora = ahora.strftime("%X")
+        self.s.f_llegada = ahora.strftime(formato)
+        dias = input("\n\tIngrese los dias estimados de entrega: ")
+        while dias.isdigit() == False:
+            dias = input("\n\t(!) Ingrese solo digitos: ")
+        dias = int(dias)
+        fechaEntrega = ahora + timedelta(days=dias)
+        self.s.f_entrega =  fechaEntrega.strftime(formato)
+        self.s.completado = '0';
+
+        print(self.s)
+        op = input("\n\tPresione <ENTER> para guardar el registro...")
+        ###Aqui me quede en guardar el registro en el archivo .txt
+
 
 
 class MenuSolicitudServicio():
-    def __init__(self):
-        self.datos = []
+    admin = AdminSolicitudServicio()
 
-    op = -1
-    while op != 0:
+    def __init__(self):
+        pass
+
+    try:
+        with open ("solicitud_servicio.txt",'r') as f:
+            pass
+    except FileNotFoundError:
+        print("\n\t(!) No se encontro registro de solicitudes!")
+        input("\n\tPresione <ENTER> para crear uno...")
+        with open("solicitud_servicio.txt", 'a') as f:
+            f.write('0')
+
+    while True:
         os.system("clear")
         print("\n\tMENU SOLICITUD DE SERVICIO \n\n\t1.- Agregar\
         \n\t2.- Mostrartodas las solicitudes\n\t3.- Buscar\
@@ -59,7 +122,7 @@ class MenuSolicitudServicio():
 
         if op == 1:
             os.system("clear")
-            pass #admin.agregar()
+            admin.agregar()
         elif op == 2:
             os.system("clear")
             pass #admin.mostrarTodos()
